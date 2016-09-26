@@ -8,8 +8,9 @@ RPIDIR=~/x-tools/$(RPIARCH)
 RPISYSROOT=~/x-tools/$(RPIARCH)/$(RPIARCH)/sysroot
 RPICXX=$(RPIDIR)/bin/$(RPIARCH)-g++
 RPICC=$(RPIDIR)/bin/$(RPIARCH)-gcc
-RPICXXFLAGS=-march=armv6 -mfloat-abi=hard -mfpu=vfp -O3 -ffast-math \
-                    -pipe -mtune=arm1176jzf-s -fstack-protector --param=ssp-buffer-size=4
+ 
+RPICXXFLAGS=-march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -mfpu=vfp -O3 -ffast-math \
+                    -pipe  -fstack-protector --param=ssp-buffer-size=4
 RPILDFLAGS=-Wl,-O1,--sort-common,--as-needed,-z,relro
 
 #####

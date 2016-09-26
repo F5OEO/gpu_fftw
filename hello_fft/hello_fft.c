@@ -1,6 +1,6 @@
 /*
-BCM2835 "GPU_FFT" release 2.0
-Copyright (c) 2014, Andrew Holme.
+BCM2835 "GPU_FFT" release 3.0
+Copyright (c) 2015, Andrew Holme.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 char Usage[] =
     "Usage: hello_fft.bin log2_N [jobs [loops]]\n"
-    "log2_N = log2(FFT_length),       log2_N = 8...21\n"
+    "log2_N = log2(FFT_length),       log2_N = 8...22\n"
     "jobs   = transforms per batch,   jobs>0,        default 1\n"
     "loops  = number of test repeats, loops>0,       default 1\n";
 
@@ -52,10 +52,10 @@ int main(int argc, char *argv[]) {
     unsigned t[2];
     double tsq[2];
 
-    GPU_FFT_COMPLEX *base;
+    struct GPU_FFT_COMPLEX *base;
     struct GPU_FFT *fft;
 
-    log2_N = argc>1? atoi(argv[1]) : 12; // 8 <= log2_N <= 21
+    log2_N = argc>1? atoi(argv[1]) : 12; // 8 <= log2_N <= 22
     jobs   = argc>2? atoi(argv[2]) : 1;  // transforms per batch
     loops  = argc>3? atoi(argv[3]) : 1;  // test repetitions
 
@@ -69,18 +69,19 @@ int main(int argc, char *argv[]) {
 
     switch(ret) {
         case -1: printf("Unable to enable V3D. Please check your firmware is up to date.\n"); return -1;
-        case -2: printf("log2_N=%d not supported.  Try between 8 and 21.\n", log2_N);         return -1;
+        case -2: printf("log2_N=%d not supported.  Try between 8 and 22.\n", log2_N);         return -1;
         case -3: printf("Out of memory.  Try a smaller batch or increase GPU memory.\n");     return -1;
         case -4: printf("Unable to map Videocore peripherals into ARM memory space.\n");      return -1;
+        case -5: printf("Can't open libbcm_host.\n");                                         return -1;
     }
 
     for (k=0; k<loops; k++) {
 
         for (j=0; j<jobs; j++) {
             base = fft->in + j*fft->step; // input buffer
-            for (i=0; i<N; i++) base[i][0] = base[i][1] = 0;
+            for (i=0; i<N; i++) base[i].re = base[i].im = 0;
             freq = j+1;
-            base[freq][0] = base[N-freq][0] = 0.5;
+            base[freq].re = base[N-freq].re = 0.5;
         }
 
         usleep(1); // Yield to OS
@@ -95,7 +96,7 @@ int main(int argc, char *argv[]) {
             for (i=0; i<N; i++) {
                 double re = cos(2*GPU_FFT_PI*freq*i/N);
                 tsq[0] += pow(re, 2);
-                tsq[1] += pow(re - base[i][0], 2) + pow(base[i][1], 2);
+                tsq[1] += pow(re - base[i].re, 2) + pow(base[i].im, 2);
             }
         }
 

@@ -1,6 +1,6 @@
 /*
-BCM2835 "GPU_FFT" release 2.0
-Copyright (c) 2014, Andrew Holme.
+BCM2835 "GPU_FFT" release 3.0
+Copyright (c) 2015, Andrew Holme.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ typedef GPU_FFT_COMPLEX COMPLEX;
 
 int gpu_fft_prepare(
     int mb,         // mailbox file_desc
-    int log2_N,     // log2(FFT_length) = 8...20
+    int log2_N,     // log2(FFT_length) = 8...22
     int direction,  // GPU_FFT_FWD: fft(); GPU_FFT_REV: ifft()
     int jobs,       // number of transforms in batch
     struct GPU_FFT **fft) {
@@ -49,6 +49,7 @@ int gpu_fft_prepare(
     struct GPU_FFT_PTR ptr;
     struct GPU_FFT *info;
 
+    printf("Prepare\n");	
     if (gpu_fft_twiddle_size(log2_N, &shared, &unique, &passes)) return -2;
 
     info_bytes = 4096;

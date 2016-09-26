@@ -142,11 +142,11 @@ bool test_override_fftw3()
    fftwf_complex out2[256];
 
    // Should run fftw plan
-   run_fft(255,in,out,FFTW_FORWARD,false);
+   run_fft(255,in,out,FFTW_FORWARD,false,1);
    pass=!gpu_fftw_running();
 
    // Should run gpu_fftw plan
-   run_fft(256,in2,out2,FFTW_FORWARD,false);
+   run_fft(256,in2,out2,FFTW_FORWARD,false,1);
    pass&=gpu_fftw_running();
 
    print_test("Override FFT3W",pass);
